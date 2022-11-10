@@ -1,6 +1,7 @@
 plugins {
     id 'java'
     id 'war'
+    id 'org.flywaydb.flyway' version "9.7.0"
 }
 
 group 'by.dudko'
@@ -22,12 +23,22 @@ tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
 }
 
+flyway {
+    url = "jdbc:postgresql://localhost:5432/carsales"
+    user = 'postgres'
+    password = 'root'
+    schemas = ['public']
+    locations = ["classpath:db/migration"]
+}
+
 dependencies {
     compileOnly('jakarta.servlet:jakarta.servlet-api:5.0.0')
-    implementation('org.jboss.weld.se:weld-se-core:4.0.3.Final')
+    implementation('org.jboss.weld.se:weld-se-core:5.1.0.Final')
     implementation 'org.postgresql:postgresql:42.5.0'
     implementation "org.apache.logging.log4j:log4j-api:${log4jVersion}"
     implementation "org.apache.logging.log4j:log4j-core:${log4jVersion}"
+    implementation "org.flywaydb:flyway-core:9.7.0"
+
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:${junitVersion}")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${junitVersion}")
