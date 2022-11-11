@@ -12,7 +12,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CarAdd implements BaseEntity<Long> { // todo выделять ли машину
+public class CarAd implements BaseEntity<Long> {
     private Long id;
     private Long userId;
     private int year;
@@ -24,5 +24,5 @@ public class CarAdd implements BaseEntity<Long> { // todo выделять ли 
     private Integer power;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private List<Telephone> telephones;
+    private List<PhoneNumber> phoneNumbers;
 }

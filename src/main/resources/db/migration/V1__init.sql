@@ -9,7 +9,7 @@ CREATE TABLE users
     updated_at TIMESTAMP   NOT NULL
 );
 
-CREATE TABLE car_adds
+CREATE TABLE car_ads
 (
     id            BIGSERIAL PRIMARY KEY,
     year          INT          NOT NULL,
@@ -24,9 +24,9 @@ CREATE TABLE car_adds
     updated_at    TIMESTAMP    NOT NULL
 );
 
-CREATE TABLE add_telephones
+CREATE TABLE ad_telephones
 (
     id        BIGSERIAL PRIMARY KEY,
-    add_id    BIGINT REFERENCES car_adds (id) ON DELETE CASCADE,
+    ad_id    BIGINT REFERENCES car_ads (id) ON DELETE CASCADE,
     telephone VARCHAR(32) NOT NULL
 );

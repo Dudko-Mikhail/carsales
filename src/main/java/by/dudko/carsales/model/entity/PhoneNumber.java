@@ -7,8 +7,8 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Telephone implements BaseEntity<Long> {
+public class PhoneNumber implements BaseEntity<Long> {
     private Long id;
-    private Long addId;
+    private Long adId;
     private String number;
 }

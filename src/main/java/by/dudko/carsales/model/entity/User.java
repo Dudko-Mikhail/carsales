@@ -7,15 +7,15 @@ import java.util.List;
 
 @Data
 @Builder
-@ToString(exclude = {"userAdds"})
-@EqualsAndHashCode(exclude = {"userAdds"})
+@ToString(exclude = {"userAds"})
+@EqualsAndHashCode(exclude = {"userAds"})
 @NoArgsConstructor
 @AllArgsConstructor
 public class User implements BaseEntity<Long> {
     private Long id;
     private String email;
-    private String telephone;
+    private String phoneNumber;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private List<CarAdd> userAdds;
+    private List<CarAd> userAds;
 }
