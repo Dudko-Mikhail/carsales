@@ -57,6 +57,7 @@ public class AdServiceImpl implements AdService {
                     } catch (Exception e) {
                         log.error(e);
                         carAdDao.deleteById(ad.getId());
+                        return null;
                     }
                     return ad;
                 });

@@ -10,5 +10,5 @@ public interface AdService {
     List<CarAd> findAll();
     Optional<CarAd> findById(long adId);
     boolean deleteById(long adId);
-    Optional<CarAd> createAd(CreateCarAdDto carAdDto);
+    Optional<CarAd> saveAd(CreateCarAdDto carAdDto);
 }
