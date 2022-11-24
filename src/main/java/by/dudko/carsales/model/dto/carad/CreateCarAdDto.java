@@ -22,5 +22,5 @@ public class CreateCarAdDto {
     private CarState carState;
     private Integer mileage;
     private Integer power;
-    private List<PhoneNumber> phoneNumbers;
+    private List<String> phoneNumbers;
 }

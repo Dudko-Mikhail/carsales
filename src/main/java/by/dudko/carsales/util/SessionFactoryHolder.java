@@ -1,12 +1,12 @@
 package by.dudko.carsales.util;
 
 import lombok.experimental.UtilityClass;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy;
 import org.hibernate.cfg.Configuration;
 
-@Log4j2
+@Slf4j
 @UtilityClass
 public class SessionFactoryHolder {
     private static final SessionFactory sessionFactory;
@@ -18,7 +18,7 @@ public class SessionFactoryHolder {
             configuration.configure("hibernate.cfg.xml");
             sessionFactory = configuration.buildSessionFactory();
         } catch (Exception e) {
-            log.fatal("Failed to load session factory", e);
+            log.error("Failed to load session factory", e);
             throw new ExceptionInInitializerError(e);
         }
 

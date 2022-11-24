@@ -14,16 +14,14 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.Getter;
-import lombok.extern.log4j.Log4j2;
 
 import java.io.IOException;
 import java.util.Optional;
 
 import static by.dudko.carsales.web.HttpMethod.DELETE;
 import static by.dudko.carsales.web.HttpMethod.GET;
-import static by.dudko.carsales.web.controller.CarAdController.*;
+import static by.dudko.carsales.web.controller.CarAdController.CarAdUrlPatterns;
 
-@Log4j2
 @WebServlet(urlPatterns = "/ads/*")
 public class CarAdController extends BaseController<CarAdUrlPatterns> {
     private final ObjectMapper objectMapper = ObjectMapperHolder.getMapper();
