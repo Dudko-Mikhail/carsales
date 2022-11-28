@@ -1,81 +1,57 @@
 package by.dudko.carsales.dao.impl;
 
 import by.dudko.carsales.dao.PhoneNumberDao;
-import by.dudko.carsales.exception.DaoException;
-import by.dudko.carsales.mapper.impl.PhoneNumberMapper;
 import by.dudko.carsales.model.entity.PhoneNumber;
-import by.dudko.carsales.pool.ConnectionPool;
+import by.dudko.carsales.util.SessionFactoryHolder;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.hibernate.SessionFactory;
 
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.List;
 import java.util.Optional;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class PhoneNumberDaoImpl implements PhoneNumberDao {
-    private static final String FIND_ALL = "SELECT ph.* FROM ad_phone_numbers ph";
-    private static final String FIND_BY_ID = "SELECT ph.* FROM ad_phone_numbers ph WHERE id = ?";
-    private static final String INSERT = "INSERT INTO ad_phone_numbers (ad_id, number) VALUES(?, ?)";
-    private static final String DELETE_BY_ID = "DELETE FROM ad_phone_numbers WHERE id = ?";
-
     private static final PhoneNumberDao instance = new PhoneNumberDaoImpl();
-    private final PhoneNumberMapper mapper = PhoneNumberMapper.getInstance();
-    private final ConnectionPool connectionPool = ConnectionPool.getInstance();
+    private final SessionFactory sessionFactory = SessionFactoryHolder.getSessionFactory();
 
     public static PhoneNumberDao getInstance() {
         return instance;
     }
 
     @Override
-    public List<PhoneNumber> findAll() throws DaoException {
-        try (var connection = connectionPool.takeConnection();
-             var statement = connection.createStatement()) {
-            var resultSet = statement.executeQuery(FIND_ALL);
-            return mapper.mapRows(resultSet);
-        } catch (SQLException e) {
-            throw new DaoException("Failed to find all phone numbers", e);
+    public List<PhoneNumber> findAll() {
+        try (var session = sessionFactory.openSession()) {
+            return session.createQuery("FROM PhoneNumber", PhoneNumber.class).getResultList();
         }
     }
 
     @Override
-    public Optional<PhoneNumber> findById(Long id) throws DaoException {
-        try (var connection = connectionPool.takeConnection();
-             var preparedStatement = connection.prepareStatement(FIND_BY_ID)) {
-            preparedStatement.setLong(1, id);
-            var resultSet = preparedStatement.executeQuery();
-            return mapper.mapRow(resultSet);
-        } catch (SQLException e) {
-            throw new DaoException("Failed to find phone number by id " + id, e);
+    public Optional<PhoneNumber> findById(Long id) {
+        try (var session = sessionFactory.openSession()) {
+            return Optional.ofNullable(session.find(PhoneNumber.class, id));
         }
     }
 
     @Override
-    public void insert(PhoneNumber phoneNumber) throws DaoException {
-        try (var connection = connectionPool.takeConnection();
-             var preparedStatement = connection.prepareStatement(INSERT, Statement.RETURN_GENERATED_KEYS)) {
-            preparedStatement.setLong(1, phoneNumber.getAdId());
-            preparedStatement.setString(2, phoneNumber.getNumber());
-            preparedStatement.executeUpdate();
-            var resultSet = preparedStatement.getGeneratedKeys();
-            if (!resultSet.next()) {
-                throw new DaoException("Failed to get phone number id");
-            }
-            phoneNumber.setId(resultSet.getLong("id"));
-        } catch (SQLException e) {
-            throw new DaoException("Failed to insert phoneNumber", e);
+    public void insert(PhoneNumber number) {
+        try (var session = sessionFactory.openSession()) {
+            session.beginTransaction();
+            session.persist(number);
+            session.getTransaction().commit();
         }
     }
 
     @Override
-    public boolean deleteById(Long id) throws DaoException {
-        try (var connection = connectionPool.takeConnection();
-             var preparedStatement = connection.prepareStatement(DELETE_BY_ID)) {
-            preparedStatement.setLong(1, id);
-            return preparedStatement.executeUpdate() > 0;
-        } catch (SQLException e) {
-            throw new DaoException("Failed to delete phone number by id " + id, e);
+    public boolean deleteById(Long id) {
+        try (var session = sessionFactory.openSession()) {
+            session.beginTransaction();
+            return Optional.ofNullable(findById(id))
+                    .map(number -> {
+                        session.delete(number);
+                        session.getTransaction().commit();
+                        return true;
+                    }).orElse(false);
         }
     }
 }

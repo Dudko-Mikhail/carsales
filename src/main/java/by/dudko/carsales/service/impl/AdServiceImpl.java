@@ -11,13 +11,10 @@ import by.dudko.carsales.service.AdService;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
-import lombok.extern.log4j.Log4j2;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-@Log4j2
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class AdServiceImpl implements AdService {
     private static final AdService instance = new AdServiceImpl();
@@ -39,26 +36,11 @@ public class AdServiceImpl implements AdService {
     }
 
     @SneakyThrows
-    public Optional<CarAd> createAd(CreateCarAdDto adDto) {
-        var now = LocalDateTime.now();
+    public Optional<CarAd> saveAd(CreateCarAdDto adDto) {
         return Optional.ofNullable(adDto)
                 .map(dto -> {
                     CarAd ad = CarAdCreateMapper.getInstance().map(dto);
-                    ad.setCreatedAt(now);
-                    ad.setUpdatedAt(now);
                     carAdDao.insert(ad);
-                    try {
-                        ad.getPhoneNumbers().forEach(
-                            p -> {
-                                p.setAdId(ad.getId());
-                                phoneNumberDao.insert(p);
-                            }
-                        );
-                    } catch (Exception e) {
-                        log.error(e);
-                        carAdDao.deleteById(ad.getId());
-                        return null;
-                    }
                     return ad;
                 });
     }
