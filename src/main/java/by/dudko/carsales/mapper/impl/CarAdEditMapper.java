@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 public class CarAdEditMapper implements DtoMapperWithTargetObject<CarAdEditDto, CarAd> {
     @Override
     public CarAd map(CarAdEditDto source, CarAd target) {
-        target.setYear(source.getYear());
+        target.setYear(source.getYear().getValue());
         target.setBrand(source.getBrand());
         target.setModel(source.getModel());
         target.setMileage(source.getMileage());
