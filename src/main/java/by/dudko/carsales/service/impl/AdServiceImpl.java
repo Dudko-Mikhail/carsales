@@ -1,53 +1,72 @@
 package by.dudko.carsales.service.impl;
 
-import by.dudko.carsales.dao.CarAdDao;
-import by.dudko.carsales.dao.PhoneNumberDao;
-import by.dudko.carsales.dao.impl.CarAdDaoImpl;
-import by.dudko.carsales.dao.impl.PhoneNumberDaoImpl;
+import by.dudko.carsales.mapper.DtoMapper;
 import by.dudko.carsales.mapper.impl.CarAdCreateMapper;
-import by.dudko.carsales.model.dto.carad.CreateCarAdDto;
+import by.dudko.carsales.mapper.impl.CarAdEditMapper;
+import by.dudko.carsales.mapper.impl.CarAdReadMapper;
+import by.dudko.carsales.model.dto.carad.CarAdCreateDto;
+import by.dudko.carsales.model.dto.carad.CarAdEditDto;
+import by.dudko.carsales.model.dto.carad.CarAdReadDto;
 import by.dudko.carsales.model.entity.CarAd;
+import by.dudko.carsales.repository.CarAdRepository;
 import by.dudko.carsales.service.AdService;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import lombok.SneakyThrows;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@Service
+@Transactional(readOnly = true)
+@RequiredArgsConstructor
 public class AdServiceImpl implements AdService {
-    private static final AdService instance = new AdServiceImpl();
-    private final CarAdDao carAdDao = CarAdDaoImpl.getInstance();
-    private final PhoneNumberDao phoneNumberDao = PhoneNumberDaoImpl.getInstance();
+    private final CarAdRepository carAdRepository;
+    private final CarAdCreateMapper adCreateMapper;
+    private final CarAdReadMapper adReadMapper;
+    private final CarAdEditMapper adEditMapper;
 
-    public static AdService getInstance() {
-        return instance;
+    @Override
+    public <T> Page<T> findAll(DtoMapper<CarAd, T> mapper, Pageable pageable) {
+        return carAdRepository.findAll(pageable)
+                .map(mapper::map);
     }
 
     @Override
-    public List<CarAd> findAll() {
-        return carAdDao.findAll();
+    public <T> Optional<T> findById(long adId, DtoMapper<CarAd, T> mapper) {
+        return carAdRepository.findById(adId)
+                .map(mapper::map);
     }
 
     @Override
-    public Optional<CarAd> findById(long adId) {
-        return carAdDao.findById(adId);
+    @Transactional
+    public CarAdReadDto saveAd(CarAdCreateDto adDto) {
+        return Optional.of(adDto)
+                .map(adCreateMapper::map)
+                .map(carAdRepository::saveAndFlush)
+                .map(adReadMapper::map)
+                .orElseThrow();
     }
-
-    @SneakyThrows
-    public Optional<CarAd> saveAd(CreateCarAdDto adDto) {
-        return Optional.ofNullable(adDto)
-                .map(dto -> {
-                    CarAd ad = CarAdCreateMapper.getInstance().map(dto);
-                    carAdDao.insert(ad);
-                    return ad;
-                });
-    }
-
 
     @Override
+    public Optional<CarAdReadDto> updateAd(long adId, CarAdEditDto carAdDto) {
+        return carAdRepository.findById(adId)
+                .map(ad -> adEditMapper.map(carAdDto, ad))
+                .map(carAdRepository::saveAndFlush)
+                .map(adReadMapper::map);
+    }
+
+    @Override
+    @Transactional
     public boolean deleteById(long adId) {
-        return carAdDao.deleteById(adId);
+        return carAdRepository.findById(adId)
+                .map(ad -> {
+                    carAdRepository.deleteById(adId);
+                    carAdRepository.flush();
+                    return true;
+                })
+                .orElse(false);
     }
 }
