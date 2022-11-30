@@ -46,6 +46,4 @@ public class CarAdCreateDto {
 
     @Size(min = 1, max = 3)
     private List<String> phoneNumbers;
-
-    // todo add images
 }

@@ -30,7 +30,7 @@ public class CarAdEditDto {
 
     @PositiveOrZero
     private Integer mileage;
-    
+
     @Positive
     private Integer power;
 }

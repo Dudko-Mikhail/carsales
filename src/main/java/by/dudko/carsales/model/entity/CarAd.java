@@ -23,11 +23,12 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
-@EqualsAndHashCode(exclude = {"id", "phoneNumbers", "owner"})
-@ToString(exclude = {"phoneNumbers", "owner"})
+@EqualsAndHashCode(exclude = {"id", "phoneNumbers", "owner", "images"})
+@ToString(exclude = {"phoneNumbers", "owner", "images"})
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -38,7 +39,7 @@ public class CarAd implements BaseEntity<Long> {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(optional = false)
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User owner;
     private int year;
@@ -61,4 +62,14 @@ public class CarAd implements BaseEntity<Long> {
     @OneToMany(mappedBy = "ad")
     @Cascade(value = CascadeType.ALL)
     private List<PhoneNumber> phoneNumbers;
+
+    @OneToMany
+    @JoinColumn(name = "ad_id", referencedColumnName = "id")
+    @Builder.Default
+    private List<Image> images = new ArrayList<>();
+
+    public void addImage(Image image) {
+        images.add(image);
+        image.setAdId(id);
+    }
 }
