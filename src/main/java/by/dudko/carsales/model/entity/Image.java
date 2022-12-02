@@ -36,7 +36,7 @@ public class Image {
                 .build();
     }
 
-    public String getImagePath() {
+    public String defineImagePath() {
         return String.format("%d_%s", id, imageName);
     }
 
