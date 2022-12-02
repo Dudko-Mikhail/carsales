@@ -2,16 +2,20 @@ package by.dudko.carsales.web.controller;
 
 import by.dudko.carsales.mapper.impl.CarAdFullInfoReadMapper;
 import by.dudko.carsales.mapper.impl.CarAdReadMapper;
+import by.dudko.carsales.model.dto.PageResponse;
 import by.dudko.carsales.model.dto.carad.CarAdCreateDto;
 import by.dudko.carsales.model.dto.carad.CarAdEditDto;
 import by.dudko.carsales.model.dto.carad.CarAdFullReadDto;
 import by.dudko.carsales.model.dto.carad.CarAdReadDto;
+import by.dudko.carsales.model.dto.user.UserReadDto;
+import by.dudko.carsales.model.entity.CarAd;
 import by.dudko.carsales.model.entity.Image;
 import by.dudko.carsales.service.AdService;
-import by.dudko.carsales.service.ImageService;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -35,18 +39,21 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CarAdRestController {
     private final AdService adService;
-    private final ImageService imageService;
     private final CarAdReadMapper readMapper;
     private final CarAdFullInfoReadMapper fullInfoReadMapper;
 
     @GetMapping
-    public Page<CarAdReadDto> findAll(@RequestParam int size, @RequestParam int page) {
-        return adService.findAll(readMapper, PageRequest.of(page, size));
+    public PageResponse<CarAdReadDto> findAll(@RequestParam int size, @RequestParam int page) {
+        Sort createdAtDescSort = Sort.by(Sort.Direction.DESC, CarAd.Fields.createdAt);
+        Page<CarAdReadDto> pageObject = adService.findAll(readMapper, PageRequest.of(page, size, createdAtDescSort));
+        return PageResponse.of(pageObject);
     }
 
     @GetMapping("/full")
-    public Page<CarAdFullReadDto> findAllWithFullInfo(@RequestParam int size, @RequestParam int page) {
-        return adService.findAll(fullInfoReadMapper, PageRequest.of(page, size));
+    public PageResponse<CarAdFullReadDto> findAllWithFullInfo(@RequestParam int size, @RequestParam int page) {
+        Sort createdAtDescSort = Sort.by(Sort.Direction.DESC, CarAd.Fields.createdAt);
+        Page<CarAdFullReadDto> pageObject = adService.findAll(fullInfoReadMapper, PageRequest.of(page, size, createdAtDescSort));
+        return PageResponse.of(pageObject);
     }
 
     @GetMapping("/{id}")
@@ -56,19 +63,27 @@ public class CarAdRestController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @GetMapping("/full/{id}")
+    @GetMapping("/{id}/full")
     public CarAdFullReadDto findByIdWithFullInfo(@PathVariable long id) {
         return adService.findById(id, fullInfoReadMapper)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
-    @GetMapping("{id}/images/{imageId}")
-    public byte[] findImage(@PathVariable long id, @PathVariable long imageId) { // todo implement
-        return null;
+    @GetMapping("images/{id}")
+    public byte[] findImage(@PathVariable long id) {
+        return adService.findAdImageById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+    }
+
+    @GetMapping("/{id}/owner")
+    public UserReadDto findOwner(@PathVariable long id) {
+        return adService.findAdOwner(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
     @ResponseStatus(code = HttpStatus.CREATED)
     @PostMapping
+    @SneakyThrows
     public CarAdReadDto createAd(@RequestBody @Validated CarAdCreateDto carAdDto) {
         return adService.saveAd(carAdDto);
     }
@@ -94,8 +109,11 @@ public class CarAdRestController {
         }
     }
 
-    @DeleteMapping("/{id}/images/{imageId}")
-    public void deleteCarImage(@PathVariable long id, @PathVariable long imageId) { // todo implement
-
+    @ResponseStatus(code = HttpStatus.NO_CONTENT)
+    @DeleteMapping("/images/{imageId}")
+    public void deleteAdImage(@PathVariable long imageId) {
+        if (!adService.deleteImageById(imageId)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
     }
 }
