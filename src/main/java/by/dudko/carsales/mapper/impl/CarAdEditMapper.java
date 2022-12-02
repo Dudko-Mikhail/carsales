@@ -12,6 +12,7 @@ public class CarAdEditMapper implements DtoMapperWithTargetObject<CarAdEditDto, 
         target.setYear(source.getYear().getValue());
         target.setBrand(source.getBrand());
         target.setModel(source.getModel());
+        target.setEngineVolume(source.getEngineVolume());
         target.setMileage(source.getMileage());
         target.setPower(source.getPower());
         return target;

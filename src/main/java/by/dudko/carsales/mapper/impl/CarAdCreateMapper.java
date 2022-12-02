@@ -3,6 +3,7 @@ package by.dudko.carsales.mapper.impl;
 import by.dudko.carsales.mapper.DtoMapper;
 import by.dudko.carsales.model.dto.carad.CarAdCreateDto;
 import by.dudko.carsales.model.entity.CarAd;
+import by.dudko.carsales.model.entity.CarState;
 import by.dudko.carsales.model.entity.PhoneNumber;
 import by.dudko.carsales.model.entity.User;
 import org.springframework.stereotype.Component;
@@ -21,7 +22,7 @@ public class CarAdCreateMapper implements DtoMapper<CarAdCreateDto, CarAd> {
                 .brand(source.getBrand())
                 .model(source.getModel())
                 .engineVolume(source.getEngineVolume())
-                .carState(source.getCarState())
+                .carState(CarState.valueOf(source.getCarState()))
                 .mileage(source.getMileage())
                 .power(source.getPower())
                 .owner(user)

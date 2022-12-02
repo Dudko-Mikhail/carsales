@@ -20,7 +20,7 @@ public class CarAdFullReadDto {
     Integer mileage;
     String ownerEmail;
     List<String> phoneNumbers;
-    List<String> imageUrls;
+    List<String> imageLinks;
     LocalDateTime createdAt;
     LocalDateTime updatedAt;
 }

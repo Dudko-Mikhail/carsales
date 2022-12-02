@@ -1,6 +1,7 @@
 package by.dudko.carsales.model.dto.carad;
 
 import by.dudko.carsales.model.entity.CarState;
+import by.dudko.carsales.validation.annotation.ValueOfEnum;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -23,6 +24,7 @@ public class CarAdCreateDto {
     @NotNull
     private Long userId;
 
+    @NotNull
     @PastOrPresent
     private Year year;
 
@@ -35,8 +37,9 @@ public class CarAdCreateDto {
     @Positive
     private Integer engineVolume;
 
-    @NotNull
-    private CarState carState;
+    @NotEmpty
+    @ValueOfEnum(enumClass = CarState.class)
+    private String carState;
 
     @PositiveOrZero
     private Integer mileage;
