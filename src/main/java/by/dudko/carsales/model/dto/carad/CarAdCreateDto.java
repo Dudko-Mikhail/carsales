@@ -14,7 +14,7 @@ import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 import javax.validation.constraints.Size;
 import java.time.Year;
-import java.util.List;
+import java.util.Set;
 
 @Data
 @Builder
@@ -48,5 +48,5 @@ public class CarAdCreateDto {
     private Integer power;
 
     @Size(min = 1, max = 3)
-    private List<String> phoneNumbers;
+    private Set<String> phoneNumbers;
 }

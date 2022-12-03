@@ -8,6 +8,7 @@ import by.dudko.carsales.model.entity.PhoneNumber;
 import by.dudko.carsales.model.entity.User;
 import org.springframework.stereotype.Component;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -31,7 +32,7 @@ public class CarAdCreateMapper implements DtoMapper<CarAdCreateDto, CarAd> {
         return ad;
     }
 
-    private void mapPhoneNumbers(CarAd ad, List<String> numbers) {
+    private void mapPhoneNumbers(CarAd ad, Collection<String> numbers) {
         List<PhoneNumber> phoneNumbers = numbers.stream()
                 .map(n -> PhoneNumber.builder()
                         .number(n)
