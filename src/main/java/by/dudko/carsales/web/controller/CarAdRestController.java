@@ -1,11 +1,8 @@
 package by.dudko.carsales.web.controller;
 
-import by.dudko.carsales.mapper.impl.CarAdFullInfoReadMapper;
-import by.dudko.carsales.mapper.impl.CarAdReadMapper;
 import by.dudko.carsales.model.dto.PageResponse;
 import by.dudko.carsales.model.dto.carad.CarAdCreateDto;
 import by.dudko.carsales.model.dto.carad.CarAdEditDto;
-import by.dudko.carsales.model.dto.carad.CarAdFullReadDto;
 import by.dudko.carsales.model.dto.carad.CarAdReadDto;
 import by.dudko.carsales.model.dto.user.UserReadDto;
 import by.dudko.carsales.model.entity.CarAd;
@@ -15,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,40 +31,30 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/ads")
 @RequiredArgsConstructor
 public class CarAdRestController {
     private final AdService adService;
-    private final CarAdReadMapper readMapper;
-    private final CarAdFullInfoReadMapper fullInfoReadMapper;
 
     @GetMapping
-    public PageResponse<CarAdReadDto> findAll(@RequestParam int size, @RequestParam int page) {
+    public PageResponse<?> findAll(@RequestParam(defaultValue = "5") int size,
+                                   @RequestParam(defaultValue = "0") int page,
+                                   @RequestParam(defaultValue = "false", name = "full") boolean isFull) {
         Sort createdAtDescSort = Sort.by(Sort.Direction.DESC, CarAd.Fields.createdAt);
-        Page<CarAdReadDto> pageObject = adService.findAll(readMapper, PageRequest.of(page, size, createdAtDescSort));
-        return PageResponse.of(pageObject);
-    }
-
-    @GetMapping("/full")
-    public PageResponse<CarAdFullReadDto> findAllWithFullInfo(@RequestParam int size, @RequestParam int page) {
-        Sort createdAtDescSort = Sort.by(Sort.Direction.DESC, CarAd.Fields.createdAt);
-        Page<CarAdFullReadDto> pageObject = adService.findAll(fullInfoReadMapper, PageRequest.of(page, size, createdAtDescSort));
+        Pageable pageable = PageRequest.of(page, size, createdAtDescSort);
+        Page<?> pageObject = isFull ? adService.findAllWithFullData(pageable) : adService.findAll(pageable);
         return PageResponse.of(pageObject);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CarAdReadDto> findById(@PathVariable long id) {
-        return adService.findById(id, readMapper)
-                .map(ResponseEntity::ok)
+    public ResponseEntity<?> findById(@PathVariable long id,
+                                      @RequestParam(defaultValue = "false", name = "full") boolean isFull) {
+        Optional<?> ad = isFull ? adService.findByIdWithFullData(id) : adService.findById(id);
+        return ad.map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
-    }
-
-    @GetMapping("/{id}/full")
-    public CarAdFullReadDto findByIdWithFullInfo(@PathVariable long id) {
-        return adService.findById(id, fullInfoReadMapper)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
     @GetMapping("images/{id}")

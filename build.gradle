@@ -27,8 +27,6 @@ tasks.withType(JavaCompile) {
 
 dependencies {
     implementation 'org.postgresql:postgresql:42.5.0'
-//    implementation "org.apache.logging.log4j:log4j-slf4j2-impl:${log4jVersion}"
-//    implementation "org.apache.logging.log4j:log4j-core:${log4jVersion}"
     implementation 'org.flywaydb:flyway-core'
 
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'

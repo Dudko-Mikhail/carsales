@@ -1,11 +1,10 @@
 package by.dudko.carsales.service;
 
-import by.dudko.carsales.mapper.DtoMapper;
 import by.dudko.carsales.model.dto.carad.CarAdCreateDto;
 import by.dudko.carsales.model.dto.carad.CarAdEditDto;
+import by.dudko.carsales.model.dto.carad.CarAdFullReadDto;
 import by.dudko.carsales.model.dto.carad.CarAdReadDto;
 import by.dudko.carsales.model.dto.user.UserReadDto;
-import by.dudko.carsales.model.entity.CarAd;
 import by.dudko.carsales.model.entity.Image;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -15,9 +14,13 @@ import java.util.List;
 import java.util.Optional;
 
 public interface AdService {
-    <T> Page<T> findAll(DtoMapper<CarAd, T> mapper, Pageable pageable);
+    Page<CarAdReadDto> findAll(Pageable pageable);
 
-    <T> Optional<T> findById(long adId, DtoMapper<CarAd, T> mapper);
+    Page<CarAdFullReadDto> findAllWithFullData(Pageable pageable);
+
+    Optional<CarAdReadDto> findById(long adId);
+
+    Optional<CarAdFullReadDto> findByIdWithFullData(long adId);
 
     Optional<UserReadDto> findAdOwner(long adId);
 

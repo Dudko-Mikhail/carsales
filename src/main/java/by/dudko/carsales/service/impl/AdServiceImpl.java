@@ -1,12 +1,13 @@
 package by.dudko.carsales.service.impl;
 
-import by.dudko.carsales.mapper.DtoMapper;
 import by.dudko.carsales.mapper.impl.CarAdCreateMapper;
 import by.dudko.carsales.mapper.impl.CarAdEditMapper;
+import by.dudko.carsales.mapper.impl.CarAdFullInfoReadMapper;
 import by.dudko.carsales.mapper.impl.CarAdReadMapper;
 import by.dudko.carsales.mapper.impl.UserReadMapper;
 import by.dudko.carsales.model.dto.carad.CarAdCreateDto;
 import by.dudko.carsales.model.dto.carad.CarAdEditDto;
+import by.dudko.carsales.model.dto.carad.CarAdFullReadDto;
 import by.dudko.carsales.model.dto.carad.CarAdReadDto;
 import by.dudko.carsales.model.dto.user.UserReadDto;
 import by.dudko.carsales.model.entity.CarAd;
@@ -38,18 +39,31 @@ public class AdServiceImpl implements AdService {
     private final ImageService imageService;
     private final CarAdCreateMapper adCreateMapper;
     private final CarAdReadMapper adReadMapper;
+    private final CarAdFullInfoReadMapper adFullInfoReadMapper;
     private final CarAdEditMapper adEditMapper;
 
     @Override
-    public <T> Page<T> findAll(DtoMapper<CarAd, T> mapper, Pageable pageable) {
+    public Page<CarAdReadDto> findAll(Pageable pageable) {
         return carAdRepository.findAll(pageable)
-                .map(mapper::map);
+                .map(adReadMapper::map);
     }
 
     @Override
-    public <T> Optional<T> findById(long adId, DtoMapper<CarAd, T> mapper) {
+    public Page<CarAdFullReadDto> findAllWithFullData(Pageable pageable) {
+        return carAdRepository.findAll(pageable)
+                .map(adFullInfoReadMapper::map);
+    }
+
+    @Override
+    public Optional<CarAdReadDto> findById(long adId) {
         return carAdRepository.findById(adId)
-                .map(mapper::map);
+                .map(adReadMapper::map);
+    }
+
+    @Override
+    public Optional<CarAdFullReadDto> findByIdWithFullData(long adId) {
+        return carAdRepository.findById(adId)
+                .map(adFullInfoReadMapper::map);
     }
 
     @Override
