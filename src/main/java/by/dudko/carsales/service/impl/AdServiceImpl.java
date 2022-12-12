@@ -14,6 +14,7 @@ import by.dudko.carsales.model.entity.CarAd;
 import by.dudko.carsales.model.entity.Image;
 import by.dudko.carsales.repository.AdImageRepository;
 import by.dudko.carsales.repository.CarAdRepository;
+import by.dudko.carsales.repository.UserRepository;
 import by.dudko.carsales.service.AdService;
 import by.dudko.carsales.service.ImageService;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +29,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -35,6 +37,7 @@ import java.util.Optional;
 public class AdServiceImpl implements AdService {
     private final CarAdRepository carAdRepository;
     private final AdImageRepository imageRepository;
+    private final UserRepository userRepository;
     private final UserReadMapper userReadMapper;
     private final ImageService imageService;
     private final CarAdCreateMapper adCreateMapper;
@@ -52,6 +55,26 @@ public class AdServiceImpl implements AdService {
     public Page<CarAdFullReadDto> findAllWithFullData(Pageable pageable) {
         return carAdRepository.findAll(pageable)
                 .map(adFullInfoReadMapper::map);
+    }
+
+    @Override
+    public Optional<List<CarAdReadDto>> findByOwnerId(long userId) {
+        if (!userRepository.existsById(userId)) {
+            return Optional.empty();
+        }
+        return Optional.of(carAdRepository.findAllByOwnerId(userId).stream()
+                .map(adReadMapper::map)
+                .collect(Collectors.toList()));
+    }
+
+    @Override
+    public Optional<List<CarAdFullReadDto>> findByOwnerIdWithFullData(long userId) {
+        if (!userRepository.existsById(userId)) {
+            return Optional.empty();
+        }
+        return Optional.of(carAdRepository.findAllByOwnerId(userId).stream()
+                .map(adFullInfoReadMapper::map)
+                .collect(Collectors.toList()));
     }
 
     @Override

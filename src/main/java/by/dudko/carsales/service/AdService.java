@@ -18,6 +18,10 @@ public interface AdService {
 
     Page<CarAdFullReadDto> findAllWithFullData(Pageable pageable);
 
+    Optional<List<CarAdReadDto>> findByOwnerId(long userId);
+
+    Optional<List<CarAdFullReadDto>> findByOwnerIdWithFullData(long userId);
+
     Optional<CarAdReadDto> findById(long adId);
 
     Optional<CarAdFullReadDto> findByIdWithFullData(long adId);

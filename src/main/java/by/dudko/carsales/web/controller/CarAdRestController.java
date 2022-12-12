@@ -15,7 +15,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -50,11 +49,10 @@ public class CarAdRestController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> findById(@PathVariable long id,
-                                      @RequestParam(defaultValue = "false", name = "full") boolean isFull) {
+    public Object findById(@PathVariable long id,
+                           @RequestParam(defaultValue = "false", name = "full") boolean isFull) {
         Optional<?> ad = isFull ? adService.findByIdWithFullData(id) : adService.findById(id);
-        return ad.map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+        return ad.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
     @GetMapping("images/{id}")

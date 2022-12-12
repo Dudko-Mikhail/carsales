@@ -1,12 +1,9 @@
 package by.dudko.carsales.service.impl;
 
-import by.dudko.carsales.mapper.DtoMapper;
 import by.dudko.carsales.mapper.impl.UserCreateEditMapper;
 import by.dudko.carsales.mapper.impl.UserReadMapper;
 import by.dudko.carsales.model.dto.user.UserCreateEditDto;
 import by.dudko.carsales.model.dto.user.UserReadDto;
-import by.dudko.carsales.model.entity.CarAd;
-import by.dudko.carsales.repository.CarAdRepository;
 import by.dudko.carsales.repository.UserRepository;
 import by.dudko.carsales.service.AdService;
 import by.dudko.carsales.service.UserService;
@@ -24,7 +21,6 @@ import java.util.stream.Collectors;
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final AdService adService;
-    private final CarAdRepository adRepository;
     private final UserReadMapper readMapper;
     private final UserCreateEditMapper createEditMapper;
 
@@ -39,13 +35,6 @@ public class UserServiceImpl implements UserService {
     public Optional<UserReadDto> findById(long userId) {
         return userRepository.findById(userId)
                 .map(readMapper::map);
-    }
-
-    @Override
-    public <T> List<T> findUserAds(long userId, DtoMapper<CarAd, T> mapper) {
-        return adRepository.findAllByOwnerId(userId).stream()
-                .map(mapper::map)
-                .collect(Collectors.toList());
     }
 
     @Override
