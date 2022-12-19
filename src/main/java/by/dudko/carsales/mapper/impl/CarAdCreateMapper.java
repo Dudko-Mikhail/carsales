@@ -1,34 +1,29 @@
 package by.dudko.carsales.mapper.impl;
 
 import by.dudko.carsales.mapper.DtoMapper;
-import by.dudko.carsales.model.dto.carad.CreateCarAdDto;
+import by.dudko.carsales.model.dto.carad.CarAdCreateDto;
 import by.dudko.carsales.model.entity.CarAd;
+import by.dudko.carsales.model.entity.CarState;
 import by.dudko.carsales.model.entity.PhoneNumber;
 import by.dudko.carsales.model.entity.User;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import org.springframework.stereotype.Component;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class CarAdCreateMapper implements DtoMapper<CreateCarAdDto, CarAd> {
-    private static final CarAdCreateMapper instance = new CarAdCreateMapper();
-
-    public static CarAdCreateMapper getInstance() {
-        return instance;
-    }
-
+@Component
+public class CarAdCreateMapper implements DtoMapper<CarAdCreateDto, CarAd> {
     @Override
-    public CarAd map(CreateCarAdDto source) {
+    public CarAd map(CarAdCreateDto source) {
         User user = new User();
         user.setId(source.getUserId());
         var ad = CarAd.builder()
-                .year(source.getYear())
+                .year(source.getYear().getValue())
                 .brand(source.getBrand())
                 .model(source.getModel())
                 .engineVolume(source.getEngineVolume())
-                .carState(source.getCarState())
+                .carState(CarState.valueOf(source.getCarState()))
                 .mileage(source.getMileage())
                 .power(source.getPower())
                 .owner(user)
@@ -37,7 +32,7 @@ public class CarAdCreateMapper implements DtoMapper<CreateCarAdDto, CarAd> {
         return ad;
     }
 
-    private void mapPhoneNumbers(CarAd ad, List<String> numbers) {
+    private void mapPhoneNumbers(CarAd ad, Collection<String> numbers) {
         List<PhoneNumber> phoneNumbers = numbers.stream()
                 .map(n -> PhoneNumber.builder()
                         .number(n)

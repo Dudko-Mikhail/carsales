@@ -1,6 +1,7 @@
 plugins {
     id 'java'
-    id 'war'
+    id 'org.springframework.boot' version '2.7.6'
+    id 'io.spring.dependency-management' version '1.1.0'
     id 'org.flywaydb.flyway' version '9.7.0'
     id 'io.freefair.lombok' version '6.5.1'
 }
@@ -13,9 +14,8 @@ repositories {
 }
 
 ext {
-    junitVersion = '5.8.2'
     log4jVersion = '2.19.0'
-    hibernateVersion = '5.6.14.Final'
+    jacksonVersion = '2.14.1'
 }
 
 sourceCompatibility = '11'
@@ -25,29 +25,15 @@ tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
 }
 
-flyway {
-    baselineOnMigrate = "true"
-    url = "jdbc:postgresql://localhost:5432/carsales"
-    user = 'postgres'
-    password = 'root'
-    schemas = ['public']
-    locations = ["classpath:db/migration"]
-}
-
 dependencies {
-    compileOnly 'jakarta.servlet:jakarta.servlet-api:5.0.0'
-    implementation 'org.jboss.weld.se:weld-se-core:5.1.0.Final'
     implementation 'org.postgresql:postgresql:42.5.0'
-    implementation "org.apache.logging.log4j:log4j-slf4j2-impl:${log4jVersion}"
-    implementation "org.apache.logging.log4j:log4j-core:${log4jVersion}"
-    implementation "org.flywaydb:flyway-core:9.7.0"
-    implementation 'com.fasterxml.jackson.core:jackson-databind:2.14.0'
-    implementation "org.hibernate:hibernate-core:${hibernateVersion}"
-    implementation "org.hibernate:hibernate-hikaricp:${hibernateVersion}"
+    implementation 'org.flywaydb:flyway-core'
 
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
 
-    testImplementation "org.junit.jupiter:junit-jupiter-api:${junitVersion}"
-    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${junitVersion}"
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 
 test {
