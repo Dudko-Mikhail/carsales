@@ -34,6 +34,8 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    implementation platform('org.testcontainers:testcontainers-bom:1.17.6')
+    testImplementation('org.testcontainers:postgresql')
 }
 
 test {
