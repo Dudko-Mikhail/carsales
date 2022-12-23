@@ -58,7 +58,7 @@ public class AdServiceImpl implements AdService {
     }
 
     @Override
-    public Optional<List<CarAdReadDto>> findByOwnerId(long userId) {
+    public Optional<List<CarAdReadDto>> findAllByOwnerId(long userId) {
         if (!userRepository.existsById(userId)) {
             return Optional.empty();
         }
@@ -68,7 +68,7 @@ public class AdServiceImpl implements AdService {
     }
 
     @Override
-    public Optional<List<CarAdFullReadDto>> findByOwnerIdWithFullData(long userId) {
+    public Optional<List<CarAdFullReadDto>> findAllByOwnerIdWithFullData(long userId) {
         if (!userRepository.existsById(userId)) {
             return Optional.empty();
         }
