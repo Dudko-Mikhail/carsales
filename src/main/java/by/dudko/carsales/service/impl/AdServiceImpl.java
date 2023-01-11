@@ -112,8 +112,11 @@ public class AdServiceImpl implements AdService {
         return carAdRepository.findById(adId)
                 .map(ad -> {
                     List<Image> imageList = new ArrayList<>();
-                    images.forEach(image -> imageList.add(uploadImage(adId, image)));
-                    modifyUpdatedAt(adId);
+                    images.forEach(imageFile -> {
+                        Image image = uploadImage(adId, imageFile);
+                        imageList.add(image);
+                        modifyUpdatedAt(image.getAd());
+                    });
                     return imageList;
                 });
     }
@@ -121,9 +124,10 @@ public class AdServiceImpl implements AdService {
     @SneakyThrows
     private Image uploadImage(long adId, MultipartFile imageFile) {
         String imageName = imageFile.getOriginalFilename();
-        Image image = Image.of(adId, imageName);
+        CarAd ad = carAdRepository.getReferenceById(adId);
+        Image image = imageRepository.save(Image.of(ad, imageName));
         imageService.uploadImage(image.defineImagePath(), imageFile.getInputStream());
-        return imageRepository.save(image);
+        return image;
     }
 
     @Override
@@ -148,7 +152,7 @@ public class AdServiceImpl implements AdService {
                 .map(image -> {
                     imageService.deleteImage(image.defineImagePath());
                     imageRepository.deleteById(imageId);
-                    modifyUpdatedAt(image.getAdId());
+                    modifyUpdatedAt(image.getAd());
                     return true;
                 })
                 .orElse(false);
@@ -168,9 +172,7 @@ public class AdServiceImpl implements AdService {
                 .orElse(false);
     }
 
-    private void modifyUpdatedAt(long adId) {
-        CarAd ad = carAdRepository.findById(adId)
-                .orElseThrow();
+    private void modifyUpdatedAt(CarAd ad) {
         ad.setUpdatedAt(LocalDateTime.now());
     }
 }
