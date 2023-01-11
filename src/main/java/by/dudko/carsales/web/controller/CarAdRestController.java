@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -81,7 +82,7 @@ public class CarAdRestController {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
-    @PatchMapping("/{id}")
+    @PutMapping("/{id}")
     public CarAdReadDto updateAd(@PathVariable long id, @RequestBody @Validated CarAdEditDto carAdDto) {
         return adService.updateAd(id, carAdDto)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
