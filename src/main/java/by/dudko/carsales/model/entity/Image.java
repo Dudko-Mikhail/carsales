@@ -6,11 +6,12 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Data
@@ -25,13 +26,14 @@ public class Image {
     @EqualsAndHashCode.Exclude
     private long id;
 
-    @Column(name = "ad_id")
-    private long adId;
+    @ManyToOne
+    @JoinColumn(name = "ad_id", referencedColumnName = "id")
+    private CarAd ad;
     private String imageName;
 
-    public static Image of(long adId, String imageName) {
+    public static Image of(CarAd ad, String imageName) {
         return Image.builder()
-                .adId(adId)
+                .ad(ad)
                 .imageName(imageName)
                 .build();
     }
