@@ -7,10 +7,10 @@ import by.dudko.carsales.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -33,6 +33,7 @@ class UserServiceTest extends BaseIntegrationTest {
         maybeUser.ifPresent(user -> {
             assertThat(user.getEmail()).isEqualTo("ivan@mail.ru");
             assertThat(user.getPhoneNumber()).isEqualTo("375254781236");
+            assertThat(user.getCreatedAt()).isEqualTo(LocalDateTime.of(2021, 12, 1, 12, 0));
         });
     }
 
@@ -56,17 +57,17 @@ class UserServiceTest extends BaseIntegrationTest {
 
     @Test
     void updateUserWithExistingId() {
-        UserCreateEditDto user = UserCreateEditDto.builder()
+        UserCreateEditDto createDto = UserCreateEditDto.builder()
                 .email("Joe@gmail.com")
                 .phoneNumber("375447614281")
                 .build();
 
-        var updatedUser = userService.updateUser(USER_ID, user);
+        var updatedUser = userService.updateUser(USER_ID, createDto);
 
         assertThat(updatedUser).isPresent();
-        updatedUser.ifPresent(u -> {
-            assertEquals(user.getEmail(), u.getEmail());
-            assertEquals(user.getPhoneNumber(), u.getPhoneNumber());
+        updatedUser.ifPresent(user -> {
+            assertThat(user.getEmail()).isEqualTo(createDto.getEmail());
+            assertThat(user.getPhoneNumber()).isEqualTo(createDto.getPhoneNumber());
         });
     }
 
@@ -82,14 +83,12 @@ class UserServiceTest extends BaseIntegrationTest {
 
     @Test
     void deleteByIdWithExistingId() {
-        assertThat(userService.findById(USER_ID)).isPresent();
         assertTrue(userService.deleteUserById(USER_ID));
         assertThat(userService.findById(USER_ID)).isEmpty();
     }
 
     @Test
     void deleteByIdWithNonExistentId() {
-        assertThat(userService.findById(NON_EXISTENT_ID)).isEmpty();
         assertFalse(userService.deleteUserById(NON_EXISTENT_ID));
     }
 }
