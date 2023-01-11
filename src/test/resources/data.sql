@@ -1,5 +1,5 @@
 insert into users (id, email, phone_number, created_at, updated_at)
-values (1, 'ivan@mail.ru', '375254781236', current_timestamp, current_timestamp),
+values (1, 'ivan@mail.ru', '375254781236', '2021-12-1 12:00:00', '2021-12-1 12:00:00'),
        (2, 'test_user@gmail.com', '375257986842', current_timestamp, current_timestamp),
        (3, 'antonenko@gmail.com', '375442236574', current_timestamp, current_timestamp),
        (4, 'sidorov@mail.ru', '375297221475', current_timestamp, current_timestamp),
@@ -7,7 +7,7 @@ values (1, 'ivan@mail.ru', '375254781236', current_timestamp, current_timestamp)
 SELECT SETVAL('users_id_seq', (SELECT MAX(id) FROM users));
 
 insert into car_ads (id, year, brand, model, engine_volume, car_state, mileage, power, user_id, created_at, updated_at)
-values (1, 2022, 'BMW', 'X6', 83, 'NEW', 1000, 600, 1, current_timestamp, current_timestamp),
+values (1, 2022, 'BMW', 'X6', 83, 'NEW', 1000, 600, 1, '2021-12-3 13:24:00', '2021-12-3 13:24:00'),
        (2, 2020, 'BMW', 'X6', 83, 'USED', 1000, 600, 2, current_timestamp, current_timestamp),
        (3, 2020, 'Volkswagen', 'Passat VIII', 66, 'NEW', 200, 150, 2, current_timestamp, current_timestamp);
 
@@ -20,7 +20,7 @@ values (1, '375254781236'), (1, '375297221462'),
        (3, '375257986842');
 
 insert into ad_images(id, ad_id, image_name)
-values (1, 1, 'first.png'), (2, 1, 'second.jpg'),
+values (1, 1, 'bmw-x6-1.jpg'), (2, 1, 'bmw-x6-2.jpg'),
        (3, 2, 'test.jpg');
 SELECT SETVAL('ad_images_id_seq', (SELECT MAX(id) FROM ad_images));
 
