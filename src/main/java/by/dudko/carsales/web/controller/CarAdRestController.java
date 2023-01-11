@@ -56,7 +56,7 @@ public class CarAdRestController {
     }
 
     @GetMapping("images/{id}")
-    public byte[] findImage(@PathVariable long id) {
+    public byte[] findImageById(@PathVariable long id) {
         return adService.findAdImageById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
