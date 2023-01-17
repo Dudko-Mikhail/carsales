@@ -1,6 +1,8 @@
 package by.dudko.carsales.model.dto.carad;
 
 import by.dudko.carsales.model.entity.CarState;
+import by.dudko.carsales.model.entity.User;
+import by.dudko.carsales.validation.annotation.ExistsInDb;
 import by.dudko.carsales.validation.annotation.ValueOfEnum;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,6 +25,7 @@ import java.util.Set;
 @AllArgsConstructor
 public class CarAdCreateDto {
     @NotNull
+    @ExistsInDb(entity = User.class)
     private Long userId;
 
     @NotNull
