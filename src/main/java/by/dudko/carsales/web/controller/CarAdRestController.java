@@ -4,9 +4,9 @@ import by.dudko.carsales.model.dto.PageResponse;
 import by.dudko.carsales.model.dto.carad.CarAdCreateDto;
 import by.dudko.carsales.model.dto.carad.CarAdEditDto;
 import by.dudko.carsales.model.dto.carad.CarAdReadDto;
+import by.dudko.carsales.model.dto.image.ImageReadDto;
 import by.dudko.carsales.model.dto.user.UserReadDto;
 import by.dudko.carsales.model.entity.CarAd;
-import by.dudko.carsales.model.entity.Image;
 import by.dudko.carsales.service.AdService;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -18,7 +18,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -77,7 +76,7 @@ public class CarAdRestController {
 
     @ResponseStatus(code = HttpStatus.CREATED)
     @PostMapping(value = "/{id}/images")
-    public List<Image> uploadImage(@PathVariable long id, @RequestParam List<MultipartFile> images) {
+    public List<ImageReadDto> uploadImages(@PathVariable long id, @RequestParam List<MultipartFile> images) {
         return adService.uploadImages(id, images)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }

@@ -4,8 +4,8 @@ import by.dudko.carsales.model.dto.carad.CarAdCreateDto;
 import by.dudko.carsales.model.dto.carad.CarAdEditDto;
 import by.dudko.carsales.model.dto.carad.CarAdFullReadDto;
 import by.dudko.carsales.model.dto.carad.CarAdReadDto;
+import by.dudko.carsales.model.dto.image.ImageReadDto;
 import by.dudko.carsales.model.dto.user.UserReadDto;
-import by.dudko.carsales.model.entity.Image;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
@@ -30,7 +30,7 @@ public interface AdService {
 
     CarAdReadDto saveAd(CarAdCreateDto carAdDto);
 
-    Optional<List<Image>> uploadImages(long adId, List<MultipartFile> images);
+    Optional<List<ImageReadDto>> uploadImages(long adId, List<MultipartFile> images);
 
     Optional<CarAdReadDto> updateAd(long adId, CarAdEditDto carAdDto);
 

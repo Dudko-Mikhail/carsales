@@ -4,11 +4,13 @@ import by.dudko.carsales.mapper.impl.CarAdCreateMapper;
 import by.dudko.carsales.mapper.impl.CarAdEditMapper;
 import by.dudko.carsales.mapper.impl.CarAdFullInfoReadMapper;
 import by.dudko.carsales.mapper.impl.CarAdReadMapper;
+import by.dudko.carsales.mapper.impl.ImageReadMapper;
 import by.dudko.carsales.mapper.impl.UserReadMapper;
 import by.dudko.carsales.model.dto.carad.CarAdCreateDto;
 import by.dudko.carsales.model.dto.carad.CarAdEditDto;
 import by.dudko.carsales.model.dto.carad.CarAdFullReadDto;
 import by.dudko.carsales.model.dto.carad.CarAdReadDto;
+import by.dudko.carsales.model.dto.image.ImageReadDto;
 import by.dudko.carsales.model.dto.user.UserReadDto;
 import by.dudko.carsales.model.entity.CarAd;
 import by.dudko.carsales.model.entity.Image;
@@ -44,6 +46,7 @@ public class AdServiceImpl implements AdService {
     private final CarAdReadMapper adReadMapper;
     private final CarAdFullInfoReadMapper adFullInfoReadMapper;
     private final CarAdEditMapper adEditMapper;
+    private final ImageReadMapper imageReadMapper;
 
     @Override
     public Page<CarAdReadDto> findAll(Pageable pageable) {
@@ -108,14 +111,14 @@ public class AdServiceImpl implements AdService {
 
     @Override
     @Transactional
-    public Optional<List<Image>> uploadImages(long adId, List<MultipartFile> images) {
+    public Optional<List<ImageReadDto>> uploadImages(long adId, List<MultipartFile> images) {
         return carAdRepository.findById(adId)
                 .map(ad -> {
-                    List<Image> imageList = new ArrayList<>();
+                    List<ImageReadDto> imageList = new ArrayList<>();
                     images.forEach(imageFile -> {
                         Image image = uploadImage(adId, imageFile);
-                        imageList.add(image);
                         modifyUpdatedAt(image.getAd());
+                        imageList.add(imageReadMapper.map(image));
                     });
                     return imageList;
                 });
