@@ -36,7 +36,7 @@ class UserControllerTest extends BaseIntegrationTest {
 
     @Test
     void findById() throws Exception {
-        mockMvc.perform(get(String.format("/users/%d", USER_ID)))
+        mockMvc.perform(get("/users/{id}", USER_ID))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("email").value("ivan@mail.ru"))
@@ -46,7 +46,7 @@ class UserControllerTest extends BaseIntegrationTest {
 
     @Test
     void findUserAds() throws Exception {
-        mockMvc.perform(get(String.format("/users/%d/ads", USER_ID)))
+        mockMvc.perform(get("/users/{id}/ads", USER_ID))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$", Matchers.hasSize(1)))
@@ -55,13 +55,13 @@ class UserControllerTest extends BaseIntegrationTest {
 
     @Test
     void findUserAdsWithNonExistentUser() throws Exception {
-        mockMvc.perform(get(String.format("/users/%d/ads", NON_EXISTENT_USER_ID)))
+        mockMvc.perform(get("/users/{id}/ads", NON_EXISTENT_USER_ID))
                 .andExpect(status().isNotFound());
     }
 
     @Test
     void findByIdWithNonExistentId() throws Exception {
-        mockMvc.perform(get(String.format("/users/%d", NON_EXISTENT_USER_ID)))
+        mockMvc.perform(get("/users/{id}", NON_EXISTENT_USER_ID))
                 .andExpect(status().isNotFound());
     }
 
@@ -105,7 +105,7 @@ class UserControllerTest extends BaseIntegrationTest {
         String json = objectMapper.writeValueAsString(newUserInfo);
 
 
-        mockMvc.perform(put(String.format("/users/%d", USER_ID))
+        mockMvc.perform(put("/users/{id}", USER_ID)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
                 .andExpect(status().isOk())
@@ -124,7 +124,7 @@ class UserControllerTest extends BaseIntegrationTest {
         String json = objectMapper.writeValueAsString(newUserInfo);
 
 
-        mockMvc.perform(put(String.format("/users/%d", USER_ID))
+        mockMvc.perform(put("/users/{id}", USER_ID)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
                 .andExpect(status().isBadRequest())
@@ -140,7 +140,7 @@ class UserControllerTest extends BaseIntegrationTest {
                 .build();
         String json = objectMapper.writeValueAsString(newUserInfo);
 
-        mockMvc.perform(put(String.format("/users/%d", NON_EXISTENT_USER_ID))
+        mockMvc.perform(put("/users/{id}", NON_EXISTENT_USER_ID)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
                 .andExpect(status().isNotFound());
@@ -148,13 +148,13 @@ class UserControllerTest extends BaseIntegrationTest {
 
     @Test
     void deleteById() throws Exception {
-        mockMvc.perform(delete(String.format("/users/%d", USER_ID)))
+        mockMvc.perform(delete("/users/{id}", USER_ID))
                 .andExpect(status().isNoContent());
     }
 
     @Test
     void deleteByIdWithNonExistentUser() throws Exception {
-        mockMvc.perform(delete(String.format("/users/%d", NON_EXISTENT_USER_ID)))
+        mockMvc.perform(delete("/users/{id}", NON_EXISTENT_USER_ID))
                 .andExpect(status().isNotFound());
     }
 }

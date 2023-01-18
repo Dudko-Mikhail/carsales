@@ -5,20 +5,21 @@ import by.dudko.carsales.model.dto.carad.CarAdCreateDto;
 import by.dudko.carsales.model.dto.carad.CarAdEditDto;
 import by.dudko.carsales.model.dto.carad.CarAdFullReadDto;
 import by.dudko.carsales.model.dto.carad.CarAdReadDto;
+import by.dudko.carsales.model.dto.image.ImageReadDto;
 import by.dudko.carsales.model.dto.user.UserReadDto;
 import by.dudko.carsales.model.entity.CarState;
-import by.dudko.carsales.model.entity.Image;
 import by.dudko.carsales.service.AdService;
 import by.dudko.carsales.utils.ImageStorageManager;
 import lombok.RequiredArgsConstructor;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.annotation.PreDestroy;
 import java.time.LocalDateTime;
 import java.time.Year;
 import java.util.List;
@@ -40,8 +41,13 @@ class AdServiceTest extends BaseIntegrationTest {
     private static final long NON_EXISTENT_IMAGE_ID = 1000L;
     private static final long TOTAL_ADS_NUMBER = 3;
 
+    private static ImageStorageManager storageManager;
     private final AdService adService;
-    private final ImageStorageManager storageManager;
+
+    @Autowired
+    public void setStorageManager(ImageStorageManager storageManager) {
+        AdServiceTest.storageManager = storageManager;
+    }
 
     @Test
     void findAll() {
@@ -176,13 +182,13 @@ class AdServiceTest extends BaseIntegrationTest {
         String fileName = "test.png";
         MultipartFile testFile = new MockMultipartFile(fileName, fileName, null, bytes);
 
-        Optional<List<Image>> maybeImages = adService.uploadImages(3, List.of(testFile));
+        Optional<List<ImageReadDto>> maybeImages = adService.uploadImages(3, List.of(testFile));
         assertThat(maybeImages).isPresent();
 
         var images = maybeImages.get();
         assertThat(images).hasSize(1);
 
-        Image image = images.get(0);
+        ImageReadDto image = images.get(0);
         assertThat(image.getImageName()).isEqualTo(fileName);
 
         Optional<byte[]> imageBytes = adService.findAdImageById(image.getId());
@@ -275,8 +281,8 @@ class AdServiceTest extends BaseIntegrationTest {
         assertFalse(adService.deleteById(NON_EXISTENT_ID));
     }
 
-    @PreDestroy
-    private void clearImageStorage() {
+    @AfterAll
+    static void clearImageStorage() {
         storageManager.clearImageStorage();
     }
 }
