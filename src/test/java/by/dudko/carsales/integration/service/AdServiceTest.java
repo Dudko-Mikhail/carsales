@@ -12,8 +12,10 @@ import by.dudko.carsales.service.AdService;
 import by.dudko.carsales.utils.ImageStorageManager;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -31,6 +33,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @RequiredArgsConstructor
 class AdServiceTest extends BaseIntegrationTest {
     private static final long AD_ID = 1L;
