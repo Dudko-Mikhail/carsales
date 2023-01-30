@@ -65,13 +65,7 @@ public class CarAd implements BaseEntity<Long> {
     @Cascade(value = CascadeType.ALL)
     private List<PhoneNumber> phoneNumbers;
 
-    @OneToMany
-    @JoinColumn(name = "ad_id", referencedColumnName = "id")
+    @OneToMany(mappedBy = "ad")
     @Builder.Default
     private List<Image> images = new ArrayList<>();
-
-    public void addImage(Image image) {
-        images.add(image);
-        image.setAdId(id);
-    }
 }

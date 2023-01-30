@@ -5,7 +5,8 @@ import by.dudko.carsales.model.dto.carad.CarAdCreateDto;
 import by.dudko.carsales.model.entity.CarAd;
 import by.dudko.carsales.model.entity.CarState;
 import by.dudko.carsales.model.entity.PhoneNumber;
-import by.dudko.carsales.model.entity.User;
+import by.dudko.carsales.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.Collection;
@@ -13,11 +14,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
+@RequiredArgsConstructor
 public class CarAdCreateMapper implements DtoMapper<CarAdCreateDto, CarAd> {
+    private final UserRepository userRepository;
+
     @Override
     public CarAd map(CarAdCreateDto source) {
-        User user = new User();
-        user.setId(source.getUserId());
         var ad = CarAd.builder()
                 .year(source.getYear().getValue())
                 .brand(source.getBrand())
@@ -26,7 +28,7 @@ public class CarAdCreateMapper implements DtoMapper<CarAdCreateDto, CarAd> {
                 .carState(CarState.valueOf(source.getCarState()))
                 .mileage(source.getMileage())
                 .power(source.getPower())
-                .owner(user)
+                .owner(userRepository.getReferenceById(source.getUserId()))
                 .build();
         mapPhoneNumbers(ad, source.getPhoneNumbers());
         return ad;

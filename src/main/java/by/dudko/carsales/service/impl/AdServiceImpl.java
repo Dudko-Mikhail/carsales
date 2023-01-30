@@ -4,11 +4,13 @@ import by.dudko.carsales.mapper.impl.CarAdCreateMapper;
 import by.dudko.carsales.mapper.impl.CarAdEditMapper;
 import by.dudko.carsales.mapper.impl.CarAdFullInfoReadMapper;
 import by.dudko.carsales.mapper.impl.CarAdReadMapper;
+import by.dudko.carsales.mapper.impl.ImageReadMapper;
 import by.dudko.carsales.mapper.impl.UserReadMapper;
 import by.dudko.carsales.model.dto.carad.CarAdCreateDto;
 import by.dudko.carsales.model.dto.carad.CarAdEditDto;
 import by.dudko.carsales.model.dto.carad.CarAdFullReadDto;
 import by.dudko.carsales.model.dto.carad.CarAdReadDto;
+import by.dudko.carsales.model.dto.image.ImageReadDto;
 import by.dudko.carsales.model.dto.user.UserReadDto;
 import by.dudko.carsales.model.entity.CarAd;
 import by.dudko.carsales.model.entity.Image;
@@ -44,6 +46,7 @@ public class AdServiceImpl implements AdService {
     private final CarAdReadMapper adReadMapper;
     private final CarAdFullInfoReadMapper adFullInfoReadMapper;
     private final CarAdEditMapper adEditMapper;
+    private final ImageReadMapper imageReadMapper;
 
     @Override
     public Page<CarAdReadDto> findAll(Pageable pageable) {
@@ -58,7 +61,7 @@ public class AdServiceImpl implements AdService {
     }
 
     @Override
-    public Optional<List<CarAdReadDto>> findByOwnerId(long userId) {
+    public Optional<List<CarAdReadDto>> findAllByOwnerId(long userId) {
         if (!userRepository.existsById(userId)) {
             return Optional.empty();
         }
@@ -68,7 +71,7 @@ public class AdServiceImpl implements AdService {
     }
 
     @Override
-    public Optional<List<CarAdFullReadDto>> findByOwnerIdWithFullData(long userId) {
+    public Optional<List<CarAdFullReadDto>> findAllByOwnerIdWithFullData(long userId) {
         if (!userRepository.existsById(userId)) {
             return Optional.empty();
         }
@@ -108,12 +111,15 @@ public class AdServiceImpl implements AdService {
 
     @Override
     @Transactional
-    public Optional<List<Image>> uploadImages(long adId, List<MultipartFile> images) {
+    public Optional<List<ImageReadDto>> uploadImages(long adId, List<MultipartFile> images) {
         return carAdRepository.findById(adId)
                 .map(ad -> {
-                    List<Image> imageList = new ArrayList<>();
-                    images.forEach(image -> imageList.add(uploadImage(adId, image)));
-                    modifyUpdatedAt(adId);
+                    List<ImageReadDto> imageList = new ArrayList<>();
+                    images.forEach(imageFile -> {
+                        Image image = uploadImage(adId, imageFile);
+                        modifyUpdatedAt(image.getAd());
+                        imageList.add(imageReadMapper.map(image));
+                    });
                     return imageList;
                 });
     }
@@ -121,9 +127,10 @@ public class AdServiceImpl implements AdService {
     @SneakyThrows
     private Image uploadImage(long adId, MultipartFile imageFile) {
         String imageName = imageFile.getOriginalFilename();
-        Image image = Image.of(adId, imageName);
+        CarAd ad = carAdRepository.getReferenceById(adId);
+        Image image = imageRepository.save(Image.of(ad, imageName));
         imageService.uploadImage(image.defineImagePath(), imageFile.getInputStream());
-        return imageRepository.save(image);
+        return image;
     }
 
     @Override
@@ -148,7 +155,7 @@ public class AdServiceImpl implements AdService {
                 .map(image -> {
                     imageService.deleteImage(image.defineImagePath());
                     imageRepository.deleteById(imageId);
-                    modifyUpdatedAt(image.getAdId());
+                    modifyUpdatedAt(image.getAd());
                     return true;
                 })
                 .orElse(false);
@@ -168,9 +175,7 @@ public class AdServiceImpl implements AdService {
                 .orElse(false);
     }
 
-    private void modifyUpdatedAt(long adId) {
-        CarAd ad = carAdRepository.findById(adId)
-                .orElseThrow();
+    private void modifyUpdatedAt(CarAd ad) {
         ad.setUpdatedAt(LocalDateTime.now());
     }
 }

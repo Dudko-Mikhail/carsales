@@ -42,8 +42,8 @@ public class UserRestController {
     @GetMapping("/{id}/ads")
     public List<?> findUserAds(@PathVariable long id,
                                @RequestParam(name = "full", defaultValue = "false") boolean isFull) {
-        var userAds = isFull ? adService.findByOwnerIdWithFullData(id)
-                : adService.findByOwnerId(id);
+        var userAds = isFull ? adService.findAllByOwnerIdWithFullData(id)
+                : adService.findAllByOwnerId(id);
         return userAds.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 

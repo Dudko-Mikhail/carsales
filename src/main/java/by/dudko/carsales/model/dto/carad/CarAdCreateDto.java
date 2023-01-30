@@ -1,11 +1,14 @@
 package by.dudko.carsales.model.dto.carad;
 
 import by.dudko.carsales.model.entity.CarState;
+import by.dudko.carsales.model.entity.User;
+import by.dudko.carsales.validation.annotation.ExistsInDb;
 import by.dudko.carsales.validation.annotation.ValueOfEnum;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -22,6 +25,7 @@ import java.util.Set;
 @AllArgsConstructor
 public class CarAdCreateDto {
     @NotNull
+    @ExistsInDb(entity = User.class)
     private Long userId;
 
     @NotNull
@@ -29,9 +33,11 @@ public class CarAdCreateDto {
     private Year year;
 
     @NotEmpty
+    @Length(max = 128)
     private String brand;
 
     @NotEmpty
+    @Length(max = 128)
     private String model;
 
     @Positive
